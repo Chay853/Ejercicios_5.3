@@ -1,0 +1,55 @@
+
+#           Autor:
+#   David Osvaldo Chay May 
+#   may876518@gmail.com
+#   Version 1.1 : 14/04/2025 -
+
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.interpolate import interp1d
+from tabulate import tabulate
+
+# Datos experimentales: Velocidad (km/h) vs Consumo (L/100 km)
+velocidad = np.array([40, 60, 80, 100, 120, 140])
+consumo = np.array([6.5, 5.8, 5.5, 5.7, 6.2, 7.0])
+
+# Crear interpolaciones
+lineal = interp1d(velocidad, consumo, kind='linear')
+cuadratica = interp1d(velocidad, consumo, kind='quadratic')
+cubica = interp1d(velocidad, consumo, kind='cubic')
+
+# Evaluar en puntos cada 10 km/h
+x_eval = np.linspace(40, 140, 11)
+y_lineal = lineal(x_eval)
+y_cuadratica = cuadratica(x_eval)
+y_cubica = cubica(x_eval)
+
+# Crear tabla con resultados
+tabla = []
+for i in range(len(x_eval)):
+    tabla.append([
+        f"{x_eval[i]:.1f}",
+        f"{y_lineal[i]:.4f}",
+        f"{y_cuadratica[i]:.4f}",
+        f"{y_cubica[i]:.4f}"
+    ])
+
+# Mostrar resultados en tabla
+headers = ["Velocidad (km/h)", "Lineal", "Cuadrática", "Cúbica"]
+print("\nTabla comparativa de interpolaciones:")
+print(tabulate(tabla, headers=headers, tablefmt="pipe"))
+
+# Graficar resultados
+x_vals = np.linspace(40, 140, 300)
+plt.figure(figsize=(10, 6))
+plt.scatter(velocidad, consumo, color='red', label='Datos experimentales')
+plt.plot(x_vals, lineal(x_vals), '--', label='Interpolación Lineal', color='blue')
+plt.plot(x_vals, cuadratica(x_vals), '-.', label='Interpolación Cuadrática', color='green')
+plt.plot(x_vals, cubica(x_vals), label='Interpolación Cúbica', color='purple')
+plt.xlabel('Velocidad (km/h)')
+plt.ylabel('Consumo (L/100 km)')
+plt.title('Interpolación del Consumo de Combustible')
+plt.grid(True)
+plt.legend()
+plt.savefig('consumo_interpolado.png')
+plt.show()
